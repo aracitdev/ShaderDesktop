@@ -1,0 +1,7 @@
+<?xml version= "1.0"?>
+<base>
+	<TimeBetweenSwitch>60000</TimeBetweenSwitch>
+	<FPS>30</FPS>
+	<Path>Shaders</Path>
+    <UseMouse>false</UseMouse>
+</base>

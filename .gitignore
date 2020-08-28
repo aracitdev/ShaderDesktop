@@ -1,0 +1,12 @@
+*.o
+*.exe
+*.glsl
+*.depend
+*.save-failed
+*.layout
+*.dll
+
+bin/
+obj/
+*.cbp
+*.out
