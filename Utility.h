@@ -10,12 +10,7 @@
 #include <string>
 #include <vector>
 #include <windows.h>
-#include <fstream>
-#include <locale>
-#include <codecvt>
-#include <gdiplus.h>
-#include <iostream>
-
+#include <filesystem>
 /**************************************************************************************************
 * \fn bool DiretoryExists(const std::string& dirName)
 * \param dirName The directory to check for.
@@ -39,13 +34,6 @@ bool Exist(const std::string& filename);
 * Searches for and creates a list of files inside of the folder.
 ***************************************************************************************************/
 std::vector<std::string> GetFilesInDirectory(std::string folder);
-
-/***************************************************************************************************
-* \fn std::string GetTempPath()
-* \return The path to the temporary files folder.
-* Gets the path to the temporary files folder.
-***************************************************************************************************/
-std::string GetTempPath(void);
 
 /***************************************************************************************************
 * \fn std::string GetFileName(const std::string& Directory)
@@ -73,13 +61,13 @@ std::string RemoveExtension(const std::string& in);
 std::string GetExtension(const std::string& path);
 
 /***************************************************************************************************
-* \fn int DeleteDirectory(const std::string& directory, bool deleteSubdirectories=true)
+* \fn std::error_code DeleteDirectory(const std::string& directory, bool deleteSubdirectories=true)
 * \param directory The directory to delete.
 * \param deleteSubdirectories Whether or not subdirectories should be deleted.
-* \return Returns the windows error code.
+* \return Returns the error code.
 * Deletes a specified directory and optionally any subdirectories, including the files contained.
 ***************************************************************************************************/
-int DeleteDirectory(const std::string &directory, bool deleteSubdirectories = true);
+std::error_code DeleteDirectory(const std::string &directory);
 
 std::string GetLastErrorAsString(void);
 

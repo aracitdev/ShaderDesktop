@@ -1,54 +1,22 @@
 #include "Utility.h"
 
-bool DirectoryExists(const std::string& dirName_in)
+bool DirectoryExists(const std::string& filename)
 {
-  DWORD ftyp = GetFileAttributesA(dirName_in.c_str());
-  if (ftyp == INVALID_FILE_ATTRIBUTES)
-    return false;  //something is wrong with the path
-
-  if (ftyp & FILE_ATTRIBUTE_DIRECTORY)
-    return true;    //directory
-
-  return false;    //not a directory!
+    return std::filesystem::exists(filename);
 }
 
 bool Exist(const std::string& filename)
 {
-    std::ifstream File; //simple file exist check
-    File.open(filename, std::ifstream::in);
-    return File.is_open();
+    return std::filesystem::exists(filename);
 }
 
 std::vector<std::string> GetFilesInDirectory(std::string folder)
 {
-    std::vector<std::string> names;
-    std::string search_path = folder + "/*.*";
-    WIN32_FIND_DATA fd;
-    HANDLE hFind = ::FindFirstFile(search_path.c_str(), &fd);
-    if(hFind != INVALID_HANDLE_VALUE)
-    {
-        do
-        {
-            // read all (real) files in current folder
-            // , delete '!' read other 2 default folder . and ..
-            if(! (fd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) )
-            {
-                names.push_back(folder + std::string("\\")+fd.cFileName);
-            }
-        } while(::FindNextFile(hFind, &fd));
-        ::FindClose(hFind);
-    }
-    return names;
+    std::vector<std::string> returnV;
+    for(auto& p: std::filesystem::directory_iterator(folder))
+        returnV.push_back(p.path().string());
+    return returnV;
 }
-
-
-std::string GetTempPath(void)
-{
-    char Path[MAX_PATH];
-    GetTempPath(MAX_PATH, Path);
-    return std::string(Path);
-}
-
 
 std::string GetFileName(const std::string& Directory)
 {
@@ -60,74 +28,11 @@ std::string GetFileName(const std::string& Directory)
 }
 
 
-int DeleteDirectory(const std::string &refcstrRootDirectory,bool bDeleteSubdirectories)
+std::error_code DeleteDirectory(const std::string &dir)
 {
-  bool bSubdirectory = false;
-  HANDLE          hFile;
-  std::string     strFilePath;
-  std::string     strPattern;
-  WIN32_FIND_DATA FileInformation;
-
-
-  strPattern = refcstrRootDirectory + "\\*.*";
-  hFile = ::FindFirstFile(strPattern.c_str(), &FileInformation);
-  if(hFile != INVALID_HANDLE_VALUE)
-  {
-    do
-    {
-      if(FileInformation.cFileName[0] != '.')
-      {
-        strFilePath.erase();
-        strFilePath = refcstrRootDirectory + "\\" + FileInformation.cFileName;
-
-        if(FileInformation.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)
-        {
-          if(bDeleteSubdirectories)
-          {
-            // Delete subdirectory
-            int iRC = DeleteDirectory(strFilePath, bDeleteSubdirectories);
-            if(iRC)
-              return iRC;
-          }
-          else
-            bSubdirectory = true;
-        }
-        else
-        {
-          // Set file attributes
-          if(::SetFileAttributes(strFilePath.c_str(),
-                                 FILE_ATTRIBUTE_NORMAL) == FALSE)
-            return ::GetLastError();
-
-          // Delete file
-          if(::DeleteFile(strFilePath.c_str()) == FALSE)
-            return ::GetLastError();
-        }
-      }
-    } while(::FindNextFile(hFile, &FileInformation) == TRUE);
-
-    // Close handle
-    ::FindClose(hFile);
-
-    DWORD dwError = ::GetLastError();
-    if(dwError != ERROR_NO_MORE_FILES)
-      return dwError;
-    else
-    {
-      if(!bSubdirectory)
-      {
-        // Set directory attributes
-        if(::SetFileAttributes(refcstrRootDirectory.c_str(),
-                               FILE_ATTRIBUTE_NORMAL) == FALSE)
-          return ::GetLastError();
-
-        // Delete directory
-        if(::RemoveDirectory(refcstrRootDirectory.c_str()) == FALSE)
-          return ::GetLastError();
-      }
-    }
-  }
-  return 0;
+    std::error_code err;
+    std::filesystem::remove(dir, err);
+    return err;
 }
 
 

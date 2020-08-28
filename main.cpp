@@ -4,7 +4,6 @@
 #include <string>
 #include <fstream>
 #include <vector>
-#include <filesystem>
 
 #include <SFML/Graphics.hpp>
 #include <tinyxml2.h>
