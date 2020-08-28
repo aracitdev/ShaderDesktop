@@ -182,6 +182,8 @@ int main(int argc, char* argv[])
         Window.draw(Shape, Shaders[currentShader]);
         Window.display();
     }
-
+    for(uint32_t counter=0; counter < Shaders.size(); counter++)
+        delete Shaders[counter];
+    Shaders.clear();
     return 0;
 }
